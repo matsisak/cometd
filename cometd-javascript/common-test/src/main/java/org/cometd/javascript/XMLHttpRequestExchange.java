@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BlockingResponseListener;
@@ -42,9 +43,10 @@ public class XMLHttpRequestExchange extends ScriptableObject
 
     public void jsConstructor(Object client, Object cookieStore, Object threadModel, Scriptable thiz, String method, String url, boolean async)
     {
-        exchange = new CometDExchange((XMLHttpRequestClient)client, (HttpCookieStore)cookieStore, (ThreadModel)threadModel, thiz, method, url, async);
+        Request theRequest = ((XMLHttpRequestClient)client).getHttpClient().newRequest(url);
+        exchange = new CometDExchange(theRequest, (HttpCookieStore)cookieStore, (ThreadModel)threadModel, thiz, method, url, async);
     }
-
+    
     public String getClassName()
     {
         return "XMLHttpRequestExchange";
@@ -145,16 +147,17 @@ public class XMLHttpRequestExchange extends ScriptableObject
         private final ThreadModel threads;
         private final Scriptable thiz;
         private final boolean async;
+        private final Request request;
         private volatile boolean aborted;
         private volatile ReadyState readyState = ReadyState.UNSENT;
         private volatile String responseText;
         private volatile int responseStatus;
         private volatile String responseStatusText;
 
-        public CometDExchange(XMLHttpRequestClient client, HttpCookieStore cookieStore, ThreadModel threads, Scriptable thiz, String method, String url, boolean async)
+        public CometDExchange(Request request, HttpCookieStore cookieStore, ThreadModel threads, Scriptable thiz, String method, String url, boolean async)
         {
-            super(client.getHttpClient().newRequest(url));
-            getRequest().method(HttpMethod.fromString(method));
+            super(request);
+            this.request = request.method(HttpMethod.fromString(method));
             this.cookieStore = cookieStore;
             this.threads = threads;
             this.thiz = thiz;
@@ -164,6 +167,11 @@ public class XMLHttpRequestExchange extends ScriptableObject
             responseStatusText = null;
             if (async)
                 notifyReadyStateChange(false);
+        }
+
+        public Request getRequest()
+        {
+            return this.request;
         }
 
         public boolean isAsynchronous()
