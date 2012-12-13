@@ -61,7 +61,7 @@ public class AuctionDemo
 
         context.setBaseResource(new ResourceCollection(
                 Resource.newResource(base + "/src/main/webapp/"),
-                Resource.newResource(base + "/target/cometd-demo-2.0.beta1-SNAPSHOT/"))
+                Resource.newResource(base + "/target/cometd-demo-3.0.0-SNAPSHOT/"))
         );
 
         // CometD servlet
