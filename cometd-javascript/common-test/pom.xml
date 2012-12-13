@@ -86,6 +86,11 @@
     </build>
 
     <dependencies>
+		<dependency>
+	      <groupId>org.apache.xmlbeans</groupId>
+	      <artifactId>xmlbeans</artifactId>
+	      <version>2.4.0</version>
+	    </dependency>    
         <dependency>
             <groupId>rhino</groupId>
             <artifactId>js</artifactId>
